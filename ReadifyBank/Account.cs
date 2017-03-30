@@ -12,11 +12,11 @@ namespace ReadifyBank
         private decimal balance;
         private DateTimeOffset openedDate;
 
-        public Account(string accountNumber, string customerName, decimal balance, DateTimeOffset openedDate)
+        public Account(string accountNumber, string customerName, DateTimeOffset openedDate)
         {
             this.accountNumber = accountNumber;
             this.customerName = customerName;
-            this.balance = balance;
+            this.balance = 0;
             this.openedDate = openedDate;
         }
         public string AccountNumber
