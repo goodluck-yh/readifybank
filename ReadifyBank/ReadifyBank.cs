@@ -7,16 +7,25 @@ using ReadifyBank.Interfaces;
 
 namespace ReadifyBank
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class ReadifyBank : Interfaces.IReadifyBank
     {
+        private const decimal INTEREST_RATE_LN = 0.0399M;
+        private const decimal INTEREST_RATE_SV = 0.06M * 12M;
+
         private IList<IAccount> accountList;
         private IList<IStatementRow> transactionLog;
+        private IList<IAccount> closedAccountList;
+
         private int LNNum;
         private int SVNum;
         public ReadifyBank()
         {
             this.accountList = new List<IAccount>();
             this.transactionLog = new List<IStatementRow>();
+            this.closedAccountList = new List<IAccount>();
             this.LNNum = 1;
             this.SVNum = 1;
         }
@@ -45,28 +54,44 @@ namespace ReadifyBank
                 return 0;
             }
 
-            DateTimeOffset openDate = account.OpenedDate;
-            TimeSpan difference = toDate.Subtract(openDate);
-            if (toDate.CompareTo(openDate) <= 0) 
+            IStatementRow lastStatement = transactionLog.Where(x => x.Account.AccountNumber == account.AccountNumber).Last();
+            if (toDate.CompareTo(lastStatement.Date) <= 0) 
             {
                 return 0;
             }
-
+            
+            int days = (toDate - lastStatement.Date).Days;
             if (account.AccountNumber.StartsWith("LN"))
             {
-
+                return days * INTEREST_RATE_LN / 365 * account.Balance;
             }
             else
             {
-
+                return days * INTEREST_RATE_SV / 365 * account.Balance;
             }
         }
 
         public IEnumerable<IStatementRow> CloseAccount(IAccount account, DateTimeOffset closeDate)
         {
-            throw new NotImplementedException();
-        }
+            if (account == null || accountList.Contains(account) == false)
+            {
+                Console.Error.WriteLine("Account does not exist");
+                return new List<IStatementRow>(); 
+            }
 
+            if (closeDate.CompareTo(DateTimeOffset.Now) > 0)
+            {
+                Console.Error.WriteLine("Close date should be earlier than the current date");
+                return null;
+            }
+
+            accountList.Remove(account);
+            Account _account = (Account)account;
+            _account.OpenedDate = closeDate;
+            closedAccountList.Add(account);
+            return transactionLog.Where(x => x.Account.AccountNumber == account.AccountNumber).OrderBy(x => x.Date).ToList();
+        }
+        
         public decimal GetBalance(IAccount account)
         {
             if(account == null || accountList.Contains(account) == false)
@@ -79,7 +104,7 @@ namespace ReadifyBank
 
         public IEnumerable<IStatementRow> GetMiniStatement(IAccount account)
         {
-            return transactionLog.Where(x => x.Account.AccountNumber == account.AccountNumber).OrderBy(x=>x.Date).Take(5).ToList();
+            return transactionLog.Where(x => x.Account.AccountNumber == account.AccountNumber).OrderByDescending(x=>x.Date).Take(5).ToList();  //bug
         }
 
         public IAccount OpenHomeLoanAccount(string customerName, DateTimeOffset openDate)

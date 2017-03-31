@@ -53,6 +53,10 @@ namespace ReadifyBank
             {
                 return openedDate;
             }
+            set
+            {
+                openedDate = value;
+            }
         }
     }
 }
