@@ -7,6 +7,7 @@ using ReadifyBank.Interfaces;
 
 namespace ReadifyBank
 {
+    // This class is the implementation class of IStatementRow infercace  
     class StatementRow : Interfaces.IStatementRow
     {
         private Account account;
@@ -15,6 +16,14 @@ namespace ReadifyBank
         private DateTimeOffset date;
         private string description;
 
+        /// <summary>
+        /// Construct Method
+        /// </summary>
+        /// <param name="account">Account</param>
+        /// <param name="amount">The amount of money</param>
+        /// <param name="balance">Balance</param>
+        /// <param name="date">Transaction date</param>
+        /// <param name="description">Description</param>
         public StatementRow(Account account, decimal amount, decimal balance, DateTimeOffset date, string description)
         {
             this.account = account;
@@ -24,6 +33,9 @@ namespace ReadifyBank
             this.description = description;
         }
 
+        /// <summary>
+        /// Account on which the transaction is made
+        /// </summary>
         public IAccount Account
         {
             get
@@ -32,6 +44,9 @@ namespace ReadifyBank
             }
         }
 
+        /// <summary>
+        /// Amount of the operation
+        /// </summary>
         public decimal Amount
         {
             get
@@ -40,6 +55,9 @@ namespace ReadifyBank
             }
         }
 
+        /// <summary>
+        /// Balance of the account after the transaction
+        /// </summary>
         public decimal Balance
         {
             get
@@ -48,6 +66,9 @@ namespace ReadifyBank
             }
         }
 
+        /// <summary>
+        /// Date and time of the transaction
+        /// </summary>
         public DateTimeOffset Date
         {
             get
@@ -56,6 +77,9 @@ namespace ReadifyBank
             }
         }
 
+        /// <summary>
+        /// Description of the transaction
+        /// </summary>
         public string Description
         {
             get
